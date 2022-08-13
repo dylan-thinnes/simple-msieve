@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+msieve -s $(mktemp) -q -i /dev/stdin |\
+awk -v print_before=$PRINT_BEFORE '''
+/^[0-9]+$/ {
+  started = 1
+  first = 1
+  input = $0
+  next
+}
+
+NF == 0 && started {
+  started = 0
+  if (print_before) out = input " " out
+  print out
+  out = ""
+  next
+}
+
+!first && started { out = out " " }
+
+started {
+  out = out $2
+  first = 0
+}
+'''

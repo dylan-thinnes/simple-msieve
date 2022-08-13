@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+function echoerr { echo "$@" 1>&2; }
+
+function usage {
+  echoerr """\
+USAGE: msieve [-h] [-v] <integers...>
+
+--debug / -d:  Print debugging info
+--help / -h:   Show help
+--before / -b: Print input integers before factors
+
+All other arguments are assumed to be inputs and silently ignored if they are
+not integers.
+  """ 1>&2
+  exit $1
+}
+
+PRINT_BEFORE=0
+DEBUG=0
+INPUTS=()
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -h|--help)
+      usage
+      ;;
+    -d|--debug)
+      DEBUG=1
+      ;;
+    -b|--before)
+      PRINT_BEFORE=1
+      ;;
+    *)
+      INPUTS+=($1)
+      ;;
+  esac
+  shift
+done
+
+if [[ $DEBUG -eq 1 ]]; then
+  echoerr "DEBUG: $DEBUG"
+  echoerr "PRINT_BEFORE: $PRINT_BEFORE"
+  echoerr "Received ${#INPUTS[@]} inputs: " "${INPUTS[*]}"
+fi
+
+echo "${INPUTS[*]}" | tr ' ' '\n' |\
+msieve-stream
